@@ -5,13 +5,25 @@
   "repository": "git@github.com:Werter12/tslint-plugin-emotion.git",
   "author": "Oleksandr Samofan <samofan77@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "build": "tsc -p ./",
+    "clean": "rm -rf /buld",
+    "lint": "tslint --project tsconfig.json --format codeFrame",
+    "test": "tslint -r ./build/rules/ --test ./test/rules/**/tslint.json ",
+    "verify": "run-s build lint test"
+  },
   "peerDependencies": {
     "tslint": "^5.1.0",
     "typescript": ">=2.1.0 || >=2.7.0-dev || >=2.8.0-dev || >=2.9.0-dev"
   },
   "devDependencies": {
+    "@types/node": "^10.12.18",
+    "@types/glob": "^7.1.1",
+    "npm-run-all": "^4.1.5",
     "tslint": "^5.12.0",
-    "typescript": "^3.2.2",
-    "npm-run-all":"^4.1.5"
+    "typescript": "^3.2.2"
+  },
+  "dependencies": {
+    "tsutils": "^3.6.0"
   }
 }

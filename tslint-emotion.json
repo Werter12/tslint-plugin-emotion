@@ -1,6 +1,6 @@
 {
   "rulesDirectory": "./rules",
   "rules":{
-    "a": true
+    "import-from-emotion": true
   }
 }

@@ -2,6 +2,7 @@
   "extends": "tslint:latest",
   "rules": {
     "no-default-export": true,
-    "strict-boolean-expressions": true
+    "object-literal-sort-keys": false,
+    "max-classes-per-file": false
   }
 }

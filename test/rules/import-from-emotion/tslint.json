@@ -1,0 +1,5 @@
+{
+  "rules": {
+    "import-from-emotion": true
+  }
+}

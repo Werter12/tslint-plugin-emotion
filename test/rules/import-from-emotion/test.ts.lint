@@ -1,0 +1,8 @@
+import { css } from 'react-emotion';
+                    ~~~~~~~~~~~~~~~  [React emotion is disallowed]
+
+import styled, { css } from 'react-emotion';
+                            ~~~~~~~~~~~~~~~  [React emotion is disallowed]
+
+import styled, { css as somethingElse } from 'react-emotion';
+                                             ~~~~~~~~~~~~~~~  [React emotion is disallowed]

@@ -1,0 +1,7 @@
+import { css } from 'emotion';
+
+import styled from '@emotion/styled';
+import { css } from 'emotion';
+
+import styled from '@emotion/styled';
+import { css as somethingElse } from 'emotion';
