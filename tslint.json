@@ -1,0 +1,7 @@
+{
+  "extends": "tslint:latest",
+  "rules": {
+    "no-default-export": true,
+    "strict-boolean-expressions": true
+  }
+}

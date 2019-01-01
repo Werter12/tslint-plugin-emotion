@@ -1,0 +1,17 @@
+{
+  "name": "tslint-plugin-emotion",
+  "version": "1.0.0",
+  "main": "tslint-emotion.json",
+  "repository": "git@github.com:Werter12/tslint-plugin-emotion.git",
+  "author": "Oleksandr Samofan <samofan77@gmail.com>",
+  "license": "MIT",
+  "peerDependencies": {
+    "tslint": "^5.1.0",
+    "typescript": ">=2.1.0 || >=2.7.0-dev || >=2.8.0-dev || >=2.9.0-dev"
+  },
+  "devDependencies": {
+    "tslint": "^5.12.0",
+    "typescript": "^3.2.2",
+    "npm-run-all":"^4.1.5"
+  }
+}
