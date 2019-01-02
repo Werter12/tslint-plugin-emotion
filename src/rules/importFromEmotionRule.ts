@@ -20,11 +20,8 @@ export class Rule extends Lint.Rules.AbstractRule {
         typescriptOnly: true,
     };
 
-    public static DISALLOWED_IMPORT = "react-emotion";
-
-    public static FAILURE_STRING_FACTORY() {
-        return "React emotion is disallowed";
-    }
+    public static DISALLOWED_IMPORT: string = "react-emotion";
+    public static FAILURE_STRING: string = "React emotion is disallowed";
 
     public apply(sourceFile: ts.SourceFile): Lint.RuleFailure[] {
         return this.applyWithWalker(new Walker(sourceFile, this.ruleName, undefined));
@@ -78,7 +75,7 @@ class Walker extends Lint.AbstractWalker<void> {
 
         this.addFailureAtNode(
             statement.moduleSpecifier,
-            Rule.FAILURE_STRING_FACTORY(),
+            Rule.FAILURE_STRING,
             Lint.Replacement.replaceNode(statement, fix),
         );
     }

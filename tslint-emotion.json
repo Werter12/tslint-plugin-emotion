@@ -1,6 +1,7 @@
 {
   "rulesDirectory": "./rules",
   "rules":{
-    "import-from-emotion": true
+    "import-from-emotion": true,
+    "no-vanilla": true
   }
 }
