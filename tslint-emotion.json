@@ -2,6 +2,7 @@
   "rulesDirectory": "./rules",
   "rules":{
     "import-from-emotion": true,
-    "no-vanilla": true
+    "no-vanilla": true,
+    "syntax-preference": true
   }
 }

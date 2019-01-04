@@ -9,7 +9,7 @@
     "build": "tsc -p ./",
     "clean": "rm -rf /buld",
     "lint": "tslint --project tsconfig.json --format codeFrame",
-    "test": "tslint -r ./build/rules/ --test ./test/rules/**/tslint.json ",
+    "test": "tslint -r ./build/rules/ --test ./test/rules/**/tslint.json ./test/rules/**/**/tslint.json ",
     "verify": "run-s build lint test"
   },
   "peerDependencies": {

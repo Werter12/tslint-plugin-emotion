@@ -1,0 +1,21 @@
+const H1 = styled.h1`
+                    ~
+  color: red;
+~~~~~~~~~~~~~~
+`;
+~ [Styles should be written using objects.]
+
+const H1 = styled('h1')`
+                       ~
+  color: red;
+~~~~~~~~~~~~~~
+`;
+~ [Styles should be written using objects.]
+
+const H1 = styled.h1({
+  color: red
+});
+
+const H1 = styled('h1')({
+  color: red
+});
