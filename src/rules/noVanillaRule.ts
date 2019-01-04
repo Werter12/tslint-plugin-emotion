@@ -1,4 +1,4 @@
-import {findImports, ImportKind} from "tsutils";
+import { findImports, ImportKind } from "tsutils";
 import * as ts from "typescript";
 
 import * as Lint from "tslint";

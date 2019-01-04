@@ -57,15 +57,15 @@ class Walker extends Lint.AbstractWalker<void> {
         const emotionImport =
             namedBindings && Array.isArray(namedBindings.elements) && namedBindings.elements.length
                 ? `import { ${namedBindings.elements
-                      .map(
-                          (element: ts.ImportSpecifier) =>
-                              element.propertyName
-                                  ? `${element.propertyName.escapedText} as ${
-                                        element.name.escapedText
-                                    }`
-                                  : element.name.escapedText,
-                      )
-                      .join(",")} } from 'emotion';`
+                    .map(
+                        (element: ts.ImportSpecifier) =>
+                            element.propertyName
+                                ? `${element.propertyName.escapedText} as ${
+                                element.name.escapedText
+                                }`
+                                : element.name.escapedText,
+                    )
+                    .join(",")} } from 'emotion';`
                 : "";
         const styledImport =
             name && name.escapedText
