@@ -19,7 +19,7 @@ export class Rule extends Lint.Rules.AbstractRule {
         options: null,
         optionExamples: [true],
         type: "functionality",
-        hasFix: false,
+        hasFix: true,
         typescriptOnly: true,
     };
 
@@ -102,10 +102,14 @@ class Walker extends Lint.AbstractWalker<void> {
 
         if (!jsxImport.has || !pragma.has) {
             if (jsxImport.has && jsxImport.node) {
-                this.addFailureAtNode(jsxImport.node, Rule.FAILURE_STRING);
+                const pragmaCommentString = `/** @jsx jsx */\n`;
+                this.addFailureAtNode(jsxImport.node, Rule.FAILURE_STRING,
+                    Lint.Replacement.appendText(jsxImport.node.pos, pragmaCommentString));
             }
             if (pragma.has && pragma.comment) {
-                this.addFailure(pragma.comment.pos, pragma.comment.end, Rule.FAILURE_STRING);
+                const importString: string = `\nimport { jsx } from '@emotion/core';`;
+                this.addFailure(pragma.comment.pos, pragma.comment.end,
+                    Rule.FAILURE_STRING, Lint.Replacement.appendText(pragma.comment.end, importString));
             }
         }
     }
