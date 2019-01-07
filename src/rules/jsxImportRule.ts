@@ -1,4 +1,7 @@
-import { forEachComment } from "tsutils";
+import {
+    forEachComment, isIdentifier, isImportDeclaration, isJsxAttribute,
+    isJsxExpression, isLiteralExpression,
+} from "tsutils";
 import * as ts from "typescript";
 
 import * as Lint from "tslint";
@@ -22,7 +25,9 @@ export class Rule extends Lint.Rules.AbstractRule {
 
     public static DISALLOWED_IMPORT: string = "emotion";
     // tslint:disable-next-line
-    public static FAILURE_STRING: string = `The css prop can only be used if jsx from @emotion/core is imported and it is set as the jsx pragma.`;
+    public static FAILURE_STRING: string = "The css prop can only be used if jsx from @emotion/core is imported and it is set as the jsx pragma.";
+    // tslint:disable-next-line
+    public static FAILURE_STRING_LITERAL: string = "Template literals should be replaced with tagged template literals using `css` when using the css prop.";
 
     public apply(sourceFile: ts.SourceFile): Lint.RuleFailure[] {
         return this.applyWithWalker(new Walker(sourceFile, this.ruleName, undefined));
@@ -41,13 +46,35 @@ interface IPragma extends IHasSetExpression {
 }
 
 class Walker extends Lint.AbstractWalker<void> {
-    public walk(sourceFile: ts.SourceFile & { pragmas: any }): void {
+    public walk(sourceFile: ts.SourceFile): void {
         const jsxImport: IJsxImport = {
             has: false,
         };
         const pragma: IPragma = {
             has: false,
         };
+        const cssAttribute: IHasSetExpression = {
+            has: false,
+        };
+        const cb = (node: ts.Node): void => {
+            if (isJsxAttribute(node) && isIdentifier(node.name)) {
+                if (node.name.escapedText === "css") {
+                    if (!cssAttribute.has) {
+                        cssAttribute.has = true;
+                    }
+                    const { initializer } = node;
+                    if (initializer && isJsxExpression(initializer) && initializer.expression
+                        && isLiteralExpression(initializer.expression)) {
+                        this.addFailureAtNode(initializer, Rule.FAILURE_STRING_LITERAL);
+                    }
+                }
+            }
+            ts.forEachChild(node, cb);
+        };
+        ts.forEachChild(sourceFile, cb);
+        if (!cssAttribute.has) {
+            return;
+        }
         forEachComment(sourceFile, (fullText: string, comment: ts.CommentRange) => {
             const match = fullText
                 .substring(comment.pos, comment.end)
@@ -58,22 +85,19 @@ class Walker extends Lint.AbstractWalker<void> {
             }
         });
         sourceFile.statements.forEach((statement: ts.Node) => {
-            if (statement.kind === ts.SyntaxKind.ImportDeclaration) {
-                const importStatement = statement as ts.ImportDeclaration;
-                const moduleSpecifier = (importStatement).moduleSpecifier;
-                if ((moduleSpecifier as ts.Expression & { text: string }).text === "@emotion/core" &&
-                    importStatement.importClause && importStatement.importClause.namedBindings) {
-                    const { elements } = importStatement.importClause.namedBindings as ts.NamedImports;
+            if (isImportDeclaration(statement)) {
+                if ((statement.moduleSpecifier as ts.Expression & { text: string }).text === "@emotion/core" &&
+                    statement.importClause && statement.importClause.namedBindings) {
+                    const { elements } = statement.importClause.namedBindings as ts.NamedImports;
 
                     elements.forEach((element: ts.ImportSpecifier) => {
                         if (element.name.escapedText === "jsx" && !jsxImport.has) {
                             jsxImport.has = true;
-                            jsxImport.node = importStatement;
+                            jsxImport.node = statement;
                         }
                     });
                 }
             }
-
         });
 
         if (!jsxImport.has || !pragma.has) {

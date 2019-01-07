@@ -21,7 +21,7 @@ export class Rule extends Lint.Rules.AbstractRule {
             type: "array",
             items: {
                 type: "string",
-                enum: [OPTION_PREFER_OBJECT_SYNTAX, OPTION_PREFER_STRING_SYNTAX]
+                enum: [OPTION_PREFER_OBJECT_SYNTAX, OPTION_PREFER_STRING_SYNTAX],
             },
             uniqueItems: true,
             minLength: 0,
