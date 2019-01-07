@@ -1,0 +1,3 @@
+// @jsx jsx
+~~~~~~~~~~~ [The css prop can only be used if jsx from @emotion/core is imported and it is set as the jsx pragma.]
+let ele = <div css={{}} />

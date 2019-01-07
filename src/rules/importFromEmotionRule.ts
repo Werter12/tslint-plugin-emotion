@@ -44,10 +44,10 @@ class Walker extends Lint.AbstractWalker<void> {
     }
 
     private checkImportClause(
-        statement: ts.ImportDeclaration & { moduleSpecifier: any },
+        statement: ts.ImportDeclaration,
         importClause: ts.ImportClause,
     ): void {
-        if (statement.moduleSpecifier.text !== Rule.DISALLOWED_IMPORT) {
+        if ((statement.moduleSpecifier as ts.Expression & { text: string }).text !== Rule.DISALLOWED_IMPORT) {
             return;
         }
         const name: ts.Identifier | undefined = importClause.name;

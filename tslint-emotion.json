@@ -3,6 +3,7 @@
   "rules":{
     "import-from-emotion": true,
     "no-vanilla": true,
-    "syntax-preference": true
+    "syntax-preference": true,
+    "jsx-import": true    
   }
 }
