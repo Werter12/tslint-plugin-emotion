@@ -37,23 +37,28 @@ export class Rule extends Lint.Rules.AbstractRule {
 interface IHasSetExpression {
     has: boolean;
 }
-interface IJsxImport extends IHasSetExpression {
+interface IImport extends IHasSetExpression {
     node?: ts.Node;
 }
-
+interface ICssAttribute extends IHasSetExpression {
+    node?: ts.Node;
+}
 interface IPragma extends IHasSetExpression {
     comment?: ts.CommentRange;
 }
 
 class Walker extends Lint.AbstractWalker<void> {
     public walk(sourceFile: ts.SourceFile): void {
-        const jsxImport: IJsxImport = {
+        const cssImport: IImport = {
+            has: false,
+        };
+        const jsxImport: IImport = {
             has: false,
         };
         const pragma: IPragma = {
             has: false,
         };
-        const cssAttribute: IHasSetExpression = {
+        const cssAttribute: ICssAttribute = {
             has: false,
         };
         const cb = (node: ts.Node): void => {
@@ -86,31 +91,46 @@ class Walker extends Lint.AbstractWalker<void> {
         });
         sourceFile.statements.forEach((statement: ts.Node) => {
             if (isImportDeclaration(statement)) {
-                if ((statement.moduleSpecifier as ts.Expression & { text: string }).text === "@emotion/core" &&
-                    statement.importClause && statement.importClause.namedBindings) {
-                    const { elements } = statement.importClause.namedBindings as ts.NamedImports;
-
-                    elements.forEach((element: ts.ImportSpecifier) => {
-                        if (element.name.escapedText === "jsx" && !jsxImport.has) {
-                            jsxImport.has = true;
-                            jsxImport.node = statement;
-                        }
-                    });
+                if (this.checkImportDeclaration(statement, "@emotion/core", "jsx") && !jsxImport.has) {
+                    jsxImport.has = true;
+                    jsxImport.node = statement;
+                }
+                if ((this.checkImportDeclaration(statement, "@emotion/core", "css") ||
+                this.checkImportDeclaration(statement, "emotion", "css")) && !cssImport.has) {
+                    cssImport.has = true;
+                    cssImport.node = statement;
                 }
             }
         });
-
+        const pragmaCommentString: string = `/** @jsx jsx **/\n`;
+        const importString: string = `import { jsx } from '@emotion/core';`;
         if (!jsxImport.has || !pragma.has) {
             if (jsxImport.has && jsxImport.node) {
-                const pragmaCommentString = `/** @jsx jsx */\n`;
-                this.addFailureAtNode(jsxImport.node, Rule.FAILURE_STRING,
-                    Lint.Replacement.appendText(jsxImport.node.pos, pragmaCommentString));
+
+                return this.addFailureAtNode(jsxImport.node, Rule.FAILURE_STRING,
+                    Lint.Replacement.appendText(jsxImport.node.pos, `${pragmaCommentString}`));
             }
             if (pragma.has && pragma.comment) {
-                const importString: string = `\nimport { jsx } from '@emotion/core';`;
-                this.addFailure(pragma.comment.pos, pragma.comment.end,
-                    Rule.FAILURE_STRING, Lint.Replacement.appendText(pragma.comment.end, importString));
+
+                return this.addFailure(pragma.comment.pos, pragma.comment.end,
+                    Rule.FAILURE_STRING, Lint.Replacement.appendText(pragma.comment.end, `\n${importString}`));
             }
+            return this.addFailure(0,
+                1,
+                Rule.FAILURE_STRING,
+                Lint.Replacement.appendText(0, `${pragmaCommentString}${importString}\n`));
         }
+    }
+
+    private checkImportDeclaration(importDeclaration: ts.ImportDeclaration, importFrom: string, importName: string)
+        : boolean {
+        if ((importDeclaration.moduleSpecifier as ts.Expression & { text: string }).text === importFrom &&
+            importDeclaration.importClause && importDeclaration.importClause.namedBindings) {
+            const { elements } = importDeclaration.importClause.namedBindings as ts.NamedImports;
+            return elements.some((element: ts.ImportSpecifier) => {
+                return (element.name.escapedText === importName);
+            });
+        }
+        return false;
     }
 }
