@@ -70,7 +70,9 @@ class Walker extends Lint.AbstractWalker<void> {
                     const { initializer } = node;
                     if (initializer && isJsxExpression(initializer) && initializer.expression
                         && isLiteralExpression(initializer.expression)) {
-                        this.addFailureAtNode(initializer, Rule.FAILURE_STRING_LITERAL);
+                        this.addFailureAtNode(initializer,
+                            Rule.FAILURE_STRING_LITERAL,
+                            Lint.Replacement.appendText(initializer.pos + 1, "css"));
                     }
                 }
             }
