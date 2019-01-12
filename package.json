@@ -8,6 +8,7 @@
   "scripts": {
     "build": "tsc -p ./",
     "clean": "rm -rf /buld",
+    "copy": "cp -f package.json README.md tslint-emotion.json build/",
     "lint": "tslint --project tsconfig.json --format codeFrame",
     "test": "tslint -r ./build/rules/ --test ./test/rules/**/tslint.json ./test/rules/**/**/tslint.json ",
     "verify": "run-s build lint test"
