@@ -1,2 +1,5 @@
-let ele = <div css={{}} />
-~  [The css prop can only be used if jsx from @emotion/core is imported and it is set as the jsx pragma.]
+let ele = <div css={`color: black;`} />
+~ [0]             
+                   ~~~~~~~~~~~~~~~~~ [1]
+[0]: The css prop can only be used if jsx from @emotion/core is imported and it is set as the jsx pragma.
+[1]: Template literals should be replaced with tagged template literals using `css` when using the css prop.

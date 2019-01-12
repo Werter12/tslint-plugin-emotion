@@ -1,3 +1,3 @@
 /** @jsx jsx **/
-import { jsx } from '@emotion/core';
-let ele = <div css={{}} />
+import { jsx, css } from '@emotion/core';
+let ele = <div css={css`color: black;`} />

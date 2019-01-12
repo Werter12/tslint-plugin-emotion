@@ -46,6 +46,7 @@ class Walker extends Lint.AbstractWalker<void> {
         let cssImport: ImportNode = null;
         let jsxImport: ImportNode = null;
         let pragmaComment: PragmaComment = null;
+        let literalExpressionFixed: boolean = false;
         const cssAttribute: IHasSetExpression = {
             has: false,
         };
@@ -61,6 +62,7 @@ class Walker extends Lint.AbstractWalker<void> {
                         this.addFailureAtNode(initializer,
                             Rule.FAILURE_STRING_LITERAL,
                             Lint.Replacement.appendText(initializer.pos + 1, "css"));
+                        literalExpressionFixed = true;
                     }
                 }
             }
@@ -90,8 +92,12 @@ class Walker extends Lint.AbstractWalker<void> {
             }
         });
         const pragmaCommentString: string = `/** @jsx jsx **/\n`;
-        const importString: string = `import { jsx } from '@emotion/core';`;
+        let importString: string = `import { jsx } from '@emotion/core';`;
         if (!jsxImport || !pragmaComment) {
+            const needCssImport: boolean = literalExpressionFixed && !this.isNode(cssImport);
+            if (needCssImport) {
+                importString = `import { jsx, css } from '@emotion/core';`;
+            }
             if (this.isNode(jsxImport)) {
                 return this.addFailureAtNode(jsxImport, Rule.FAILURE_STRING,
                     Lint.Replacement.appendText(jsxImport.pos, `${pragmaCommentString}`));
@@ -100,6 +106,7 @@ class Walker extends Lint.AbstractWalker<void> {
                 return this.addFailure(pragmaComment.pos, pragmaComment.end,
                     Rule.FAILURE_STRING, Lint.Replacement.appendText(pragmaComment.end, `\n${importString}`));
             }
+
             return this.addFailure(0,
                 1,
                 Rule.FAILURE_STRING,
