@@ -37,28 +37,16 @@ export class Rule extends Lint.Rules.AbstractRule {
 interface IHasSetExpression {
     has: boolean;
 }
-interface IImport extends IHasSetExpression {
-    node?: ts.Node;
-}
-interface ICssAttribute extends IHasSetExpression {
-    node?: ts.Node;
-}
-interface IPragma extends IHasSetExpression {
-    comment?: ts.CommentRange;
-}
+
+type ImportNode = ts.Node | null;
+type PragmaComment = ts.CommentRange | null;
 
 class Walker extends Lint.AbstractWalker<void> {
     public walk(sourceFile: ts.SourceFile): void {
-        const cssImport: IImport = {
-            has: false,
-        };
-        const jsxImport: IImport = {
-            has: false,
-        };
-        const pragma: IPragma = {
-            has: false,
-        };
-        const cssAttribute: ICssAttribute = {
+        let cssImport: ImportNode = null;
+        let jsxImport: ImportNode = null;
+        let pragmaComment: PragmaComment = null;
+        const cssAttribute: IHasSetExpression = {
             has: false,
         };
         const cb = (node: ts.Node): void => {
@@ -86,36 +74,31 @@ class Walker extends Lint.AbstractWalker<void> {
             const match = fullText
                 .substring(comment.pos, comment.end)
                 .match(JSX_ANNOTATION_REGEX);
-            if (match && match[1] === "jsx" && !pragma.has) {
-                pragma.has = true;
-                pragma.comment = comment;
+            if (match && match[1] === "jsx" && !pragmaComment) {
+                pragmaComment = comment;
             }
         });
         sourceFile.statements.forEach((statement: ts.Node) => {
             if (isImportDeclaration(statement)) {
-                if (this.checkImportDeclaration(statement, "@emotion/core", "jsx") && !jsxImport.has) {
-                    jsxImport.has = true;
-                    jsxImport.node = statement;
+                if (this.checkImportDeclaration(statement, "@emotion/core", "jsx") && !jsxImport) {
+                    jsxImport = statement;
                 }
                 if ((this.checkImportDeclaration(statement, "@emotion/core", "css") ||
-                this.checkImportDeclaration(statement, "emotion", "css")) && !cssImport.has) {
-                    cssImport.has = true;
-                    cssImport.node = statement;
+                this.checkImportDeclaration(statement, "emotion", "css")) && !cssImport) {
+                    cssImport = statement;
                 }
             }
         });
         const pragmaCommentString: string = `/** @jsx jsx **/\n`;
         const importString: string = `import { jsx } from '@emotion/core';`;
-        if (!jsxImport.has || !pragma.has) {
-            if (jsxImport.has && jsxImport.node) {
-
-                return this.addFailureAtNode(jsxImport.node, Rule.FAILURE_STRING,
-                    Lint.Replacement.appendText(jsxImport.node.pos, `${pragmaCommentString}`));
+        if (!jsxImport || !pragmaComment) {
+            if (this.isNode(jsxImport)) {
+                return this.addFailureAtNode(jsxImport, Rule.FAILURE_STRING,
+                    Lint.Replacement.appendText(jsxImport.pos, `${pragmaCommentString}`));
             }
-            if (pragma.has && pragma.comment) {
-
-                return this.addFailure(pragma.comment.pos, pragma.comment.end,
-                    Rule.FAILURE_STRING, Lint.Replacement.appendText(pragma.comment.end, `\n${importString}`));
+            if (this.isComment(pragmaComment)) {
+                return this.addFailure(pragmaComment.pos, pragmaComment.end,
+                    Rule.FAILURE_STRING, Lint.Replacement.appendText(pragmaComment.end, `\n${importString}`));
             }
             return this.addFailure(0,
                 1,
@@ -134,5 +117,13 @@ class Walker extends Lint.AbstractWalker<void> {
             });
         }
         return false;
+    }
+
+    private isNode(arg: any): arg is ts.Node {
+        return arg !== null;
+    }
+
+    private isComment(arg: any): arg is ts.CommentRange {
+        return arg !== null;
     }
 }
