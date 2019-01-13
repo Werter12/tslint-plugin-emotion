@@ -2,7 +2,7 @@
   "rulesDirectory": "./rules",
   "rules":{
     "import-from-emotion": true,
-    "no-vanilla": true,
+    "no-vanilla": false,
     "syntax-preference": false,
     "jsx-import": true    
   }

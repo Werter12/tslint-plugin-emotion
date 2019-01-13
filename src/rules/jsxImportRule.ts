@@ -34,8 +34,9 @@ export class Rule extends Lint.Rules.AbstractRule {
     }
 }
 
-interface IHasSetExpression {
+interface ICssAttributes {
     has: boolean;
+    nodes: ts.Identifier[];
 }
 
 type ImportNode = ts.Node | null;
@@ -47,15 +48,17 @@ class Walker extends Lint.AbstractWalker<void> {
         let jsxImport: ImportNode = null;
         let pragmaComment: PragmaComment = null;
         let literalExpressionFixed: boolean = false;
-        const cssAttribute: IHasSetExpression = {
+        const cssAttributes: ICssAttributes = {
             has: false,
+            nodes: [],
         };
         const cb = (node: ts.Node): void => {
             if (isJsxAttribute(node) && isIdentifier(node.name)) {
                 if (node.name.escapedText === "css") {
-                    if (!cssAttribute.has) {
-                        cssAttribute.has = true;
+                    if (!cssAttributes.has) {
+                        cssAttributes.has = true;
                     }
+                    cssAttributes.nodes.push(node.name);
                     const { initializer } = node;
                     if (initializer && isJsxExpression(initializer) && initializer.expression
                         && isLiteralExpression(initializer.expression)) {
@@ -69,7 +72,7 @@ class Walker extends Lint.AbstractWalker<void> {
             ts.forEachChild(node, cb);
         };
         ts.forEachChild(sourceFile, cb);
-        if (!cssAttribute.has) {
+        if (!cssAttributes.has) {
             return;
         }
         forEachComment(sourceFile, (fullText: string, comment: ts.CommentRange) => {
@@ -107,10 +110,15 @@ class Walker extends Lint.AbstractWalker<void> {
                     Rule.FAILURE_STRING, Lint.Replacement.appendText(pragmaComment.end, `\n${importString}`));
             }
 
-            return this.addFailure(0,
-                1,
-                Rule.FAILURE_STRING,
-                Lint.Replacement.appendText(0, `${pragmaCommentString}${importString}\n`));
+            if (cssAttributes.nodes.length) {
+                cssAttributes.nodes.forEach((cssAttribute: ts.Identifier) => {
+                    this.addFailureAtNode(
+                        cssAttribute,
+                        Rule.FAILURE_STRING,
+                        Lint.Replacement.appendText(0, `${pragmaCommentString}${importString}\n`));
+                });
+                return;
+            }
         }
     }
 

@@ -15,7 +15,7 @@ export class Rule extends Lint.Rules.AbstractRule {
         options: null,
         optionExamples: [true],
         type: "functionality",
-        hasFix: false,
+        hasFix: true,
         typescriptOnly: true,
     };
 
