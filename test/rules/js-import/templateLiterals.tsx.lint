@@ -1,4 +1,4 @@
-/** @jsx jsx **/
+/** @jsx jsx */
 import { jsx, css } from '@emotion/core'
 let ele = <div css={`color:hotpink;`} />
                    ~~~~~~~~~~~~~~~~~~    [Template literals should be replaced with tagged template literals using `css` when using the css prop.]

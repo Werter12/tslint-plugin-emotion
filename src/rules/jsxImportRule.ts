@@ -94,7 +94,7 @@ class Walker extends Lint.AbstractWalker<void> {
                 }
             }
         });
-        const pragmaCommentString: string = `/** @jsx jsx **/\n`;
+        const pragmaCommentString: string = `/** @jsx jsx */\n`;
         let importString: string = `import { jsx } from '@emotion/core';`;
         if (!jsxImport || !pragmaComment) {
             const needCssImport: boolean = literalExpressionFixed && !this.isNode(cssImport);
