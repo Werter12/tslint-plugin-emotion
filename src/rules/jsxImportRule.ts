@@ -11,9 +11,9 @@ const JSX_ANNOTATION_REGEX = /\*?\s*@jsx\s+([^\s]+)/;
 export class Rule extends Lint.Rules.AbstractRule {
     public static metadata: Lint.IRuleMetadata = {
         ruleName: "jsx-import",
-        description: "Rule ensures that jsx from @emotion/core is imported",
+        description: "Rule ensures that jsx from @emotion/core is imported and pragma comment is present",
         descriptionDetails: Lint.Utils.dedent`
-             This rule add pragma with proper import if there is an attribute css
+             This rule check if pragma comment added with proper import if there is an attribute css present
         `,
         optionsDescription: "Not configurable.",
         options: null,

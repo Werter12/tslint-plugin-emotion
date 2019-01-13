@@ -32,9 +32,11 @@ class Walker extends Lint.AbstractWalker<void> {
         const imports: any[] = findImports(sourceFile, ImportKind.ImportDeclaration);
         imports.forEach((importStatement) => {
             if (importStatement.text === Rule.DISALLOWED_IMPORT) {
+                const fix = "'@emotion/core'";
                 this.addFailureAtNode(
                     importStatement,
                     Rule.FAILURE_STRING,
+                    Lint.Replacement.replaceNode(importStatement, fix),
                 );
             }
         });
