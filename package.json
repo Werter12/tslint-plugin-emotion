@@ -1,6 +1,6 @@
 {
   "name": "tslint-plugin-emotion",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "main": "tslint-emotion.json",
   "repository": "git@github.com:Werter12/tslint-plugin-emotion.git",
   "author": "Oleksandr Samofan <samofan77@gmail.com>",
